@@ -42,7 +42,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
     
     func drawEarth(){
         //Se procede a cargar los elementos
-        //se empiezará por las imágenes
+        //...se empiezará por las imágenes
         guard let diffuse = UIImage(named: "art.scnassets/earth_diffuse_4k.jpg"),
               let specular = UIImage(named: "art.scnassets/earth_specular_1k.jpg"),
               let lights = UIImage(named: "art.scnassets/earth_lights_4k.jpg"),
@@ -72,14 +72,16 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         earth.firstMaterial = earthMaterial
         
         //Creamos las nubes
-        let clouds = SCNSphere(radius: 0.3075) //será ligeramente más grande para que esta envuelva la tierra
+        //será ligeramente más grande para que esta envuelva la tierra
+        let clouds = SCNSphere(radius: 0.3075)
         clouds.segmentCount = 144 //predeterminados son 48
         let cloudMaterial = SCNMaterial()
         cloudMaterial.diffuse.contents = UIColor.white
         cloudMaterial.locksAmbientWithDiffuse = true
         cloudMaterial.transparent.contents = nubes
         cloudMaterial.transparencyMode = .rgbZero
-        cloudMaterial.writesToDepthBuffer = false //se disminuyen cargas de profundidad porque no serán necesarias
+        //se disminuyen cargas de profundidad porque no serán necesarias
+        cloudMaterial.writesToDepthBuffer = false
         
         //Cargamos el shader de las nubes
         if let shaderURL = Bundle.main.url(forResource: "AtmosphereHalo", withExtension: "glsl"),
@@ -101,20 +103,27 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         //la agregamos a la tierra
         earthNode.addChildNode(cloudNode)
         
-        //podemos darle más realismo a la tierra haciendo que esta rote un poco
-        //se necesita establecer un eje sobre el cual se ancla la tierra
+        /*
+         Para darle un poco más de realismo, podemos inclinar a la tierra sobre su eje
+         y se necesita establecer un eje sobre el cual se ancla la tierra para rotarla
+         */
         let axisNode = SCNNode()
-        //ahora este nodo debe asociarse a la pantalla que en donde se quiere establecer
-        //por lo que se toma la sceneView y se asigna al nodo raíz
+        /*
+         Ahora, este nodo debe asociarse a la pantalla en donde se quiere establecer,
+         por lo que se toma la sceneView y se asigna al nodo raíz
+         */
         sceneView.scene.rootNode.addChildNode(axisNode) //porque este contiene la tierra
         axisNode.addChildNode(earthNode)
         axisNode.rotation = SCNVector4(1, 0, 0, Double.pi/6)
         
         
         
-        //podemos colocar la tierra en una posición determinada
-        //con la especificación de un vector x, y, z
-        earthNode.position = SCNVector3(0, -0.5, -1) //alejado a un metro de nosotros (-1) y la bajamos porque el axis la eleva por defecto
+        /*
+         Podemos colocar la tierra en una posición determinada, con la especificación
+         de un vector x, y, z
+         Alejamos el objeto 1m de nosotros (-1) y la bajamos porque el axis la eleva
+         */
+        earthNode.position = SCNVector3(0, -0.5, -1)
         
         //***************************************
         //para verificar si rota la tierra:
@@ -148,7 +157,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.scene.rootNode.addChildNode(sunNode)
         
         
-        //Creamos la animación de rotación de la tierra --> las cuales se hacen a través de core animation
+        //Creamos la animación de rotación de la tierra -> las cuales se hacen a través de CoreAnimation
         let earthRotate = CABasicAnimation(keyPath: "rotation.w") //verificar si funciona sin la w
         earthRotate.byValue = CGFloat.pi * 2.0
         earthRotate.duration = 50 //durará 50 segs
