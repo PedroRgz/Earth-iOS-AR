@@ -77,7 +77,7 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         clouds.segmentCount = 144 //predeterminados son 48
         let cloudMaterial = SCNMaterial()
         cloudMaterial.diffuse.contents = UIColor.white
-        cloudMaterial.locksAmbientWithDiffuse = true
+        cloudMaterial.lightingModel = .physicallyBased
         cloudMaterial.transparent.contents = nubes
         cloudMaterial.transparencyMode = .rgbZero
         //se disminuyen cargas de profundidad porque no serán necesarias
@@ -157,21 +157,12 @@ class ViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
         sceneView.scene.rootNode.addChildNode(sunNode)
         
         
-        //Creamos la animación de rotación de la tierra -> las cuales se hacen a través de CoreAnimation
-        let earthRotate = CABasicAnimation(keyPath: "rotation.w") //verificar si funciona sin la w
-        earthRotate.byValue = CGFloat.pi * 2.0
-        earthRotate.duration = 50 //durará 50 segs
-        earthRotate.timingFunction = CAMediaTimingFunction(name: .linear) //linear
-        earthRotate.repeatCount = .infinity //se repide de forma indefinida
-        earthNode.addAnimation(earthRotate, forKey: "Rotación Tierra")
-        
-        //Creamos la animación de rotación de las nubes --> las cuales se hacen a través de core animation
-        let cloudRotate = CABasicAnimation(keyPath: "rotation.w") //verificar si funciona sin la w
-        cloudRotate.byValue = -CGFloat.pi * 2.0
-        cloudRotate.duration = 150 //durará 150 segs
-        cloudRotate.timingFunction = CAMediaTimingFunction(name: .linear) //linear
-        cloudRotate.repeatCount = .infinity //se repide de forma indefinida
-        cloudNode.addAnimation(cloudRotate, forKey: "Rotación nubes")
+        // Animaciones de rotación usando SCNAction
+        let earthAction = SCNAction.rotateBy(x: 0, y: CGFloat.pi * 2.0, z: 0, duration: 50)
+        earthNode.runAction(SCNAction.repeatForever(earthAction))
+
+        let cloudAction = SCNAction.rotateBy(x: 0, y: -CGFloat.pi * 2.0, z: 0, duration: 150)
+        cloudNode.runAction(SCNAction.repeatForever(cloudAction))
     }
     
     
